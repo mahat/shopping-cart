@@ -1,44 +1,27 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var csrf = require('csurf');
-var passport = require('passport');
 
-var Product = require('../models/product');
-
-var csrfProtection = csrf();
-router.use(csrfProtection);
+var Product = require("../models/product");
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  Product.find(function (err, docs) {
-      if (err != undefined) {
-        console.log('error getting data from DB');
-      }
+router.get("/", function(req, res, next) {
+  Product.find(function(err, docs) {
+    if (err != undefined) {
+      console.log("error getting data from DB");
+    }
 
-      var productChunks = [];
-      var chunkSize = 3;
-      for (var i =0 ;i < docs.length; i+=chunkSize) {
-        productChunks.push(docs.slice(i,i + chunkSize));
-      }
+    var productChunks = [];
+    var chunkSize = 3;
+    for (var i = 0; i < docs.length; i += chunkSize) {
+      productChunks.push(docs.slice(i, i + chunkSize));
+    }
 
-      res.render('shop/index', { title: 'Shopping-Cart', products: productChunks});
+    res.render("shop/index", {
+      title: "Shopping-Cart",
+      products: productChunks
+    });
   });
 });
 
-router.get('/user/signup', function(req,res) {
-  var message = req.flash('error');
-  console.log(message);
-  res.render('user/signup',{csrfToken: req.csrfToken(), messages: message, hasErrors: message.length > 0});
-});
-
-router.post('/user/signup', passport.authenticate('local.signup', {
-  successRedirect: '/user/profile',
-  failureRedirect: '/user/signup',
-  failureFlash: true
-}));
-
-router.get('/user/profile', function(req,res, next) { 
-  res.render('user/profile');
-});
 
 module.exports = router;
